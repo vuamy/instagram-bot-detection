@@ -4,9 +4,10 @@ from instaloader import Profile
 import instaloader
 import time
 from random import randint
+import os
 
 # initialize instaloader to help scrape data
-L = instaloader.Instaloader()
+L = instaloader.Instaloader(download_video_thumbnails=False)
 
 usernames = [] # usernames of accounts
 userclass = [] # real = 0, bot = 1, fake = 2
@@ -24,7 +25,31 @@ with open('train_data.csv', mode='r') as file:
 tsleep = randint(1,20)
 
 # testing instaloader loop
+
 for name in usernames:
+    # create folder for this user
+    newpath = "./{}".format(name)
+    if not os.path.exists(newpath):
+        os.makedirs(newpath)    
+    
+    # create paths within folders
+    captionfile = open((os.path.join(newpath, "{}_captions.txt".format(name))), "w", encoding="utf-8")
+    os.makedirs(os.path.join(newpath, "{}_images".format(name)))
+    imagepath = "./{}/{}_images".format(name, name)
+    
+    # get profile from the given username
     profile = Profile.from_username(L.context, name)
-    print(profile)
-    time.sleep(tsleep)
+    
+    # download information into their folder
+    count = 0 # keeps track of how many images
+    for post in profile.get_posts():
+        count += 1
+
+        # saves all captions into a single txt file
+        if post.caption:
+            captionfile.write(post.caption+"\n")
+
+        # saves all images concatenated by image count into the image folder    
+        L.download_pic(os.path.join(imagepath, "{}_image_{}".format(name, count)), post.url, post.date_utc)
+    captionfile.close()
+    time.sleep(tsleep) # sleep so instagram doesnt kick us out
