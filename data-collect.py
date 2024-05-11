@@ -33,8 +33,8 @@ for name in usernames:
         os.makedirs(newpath)    
     
     # create paths within folders
-    captionfile = open((os.path.join(newpath, "{}_captions.txt".format(name))), "w", encoding="utf-8")
-    os.makedirs(os.path.join(newpath, "{}_images".format(name)))
+    captionfile = open((os.path.join(newpath, "{}_captions.txt".format(name))), "w+", encoding="utf-8")
+    os.makedirs(os.path.join(newpath, "{}_images".format(name)), exist_ok=True)
     imagepath = "./{}/{}_images".format(name, name)
     
     # get profile from the given username
@@ -52,4 +52,18 @@ for name in usernames:
         # saves all images concatenated by image count into the image folder    
         L.download_pic(os.path.join(imagepath, "{}_image_{}".format(name, count)), post.url, post.date_utc)
     captionfile.close()
+
+    #creates text file for follower/followee count, first line is for number of followers, second line is for number of followees
+    follower_followee = open((os.path.join(newpath, "{}_follower_info.txt".format(name))), "w+", encoding="utf-8")
+    follower_followee.write(str(profile.followers) +"\n"+str(profile.followees))
+
+    #creates text file for biography
+    bio = open((os.path.join(newpath, "{}_biography.txt".format(name))), "w+", encoding="utf-8")
+    bio.write(str(profile.biography))
+
+    #saves the profile picture into image folder
+    L.download_profilepic_if_new(profile, None)
+
+
+
     time.sleep(tsleep) # sleep so instagram doesnt kick us out
