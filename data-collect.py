@@ -8,7 +8,7 @@ import os
 
 # initialize instaloader to help scrape data
 L = instaloader.Instaloader(download_video_thumbnails=False)
-L.login("instabotincomments", "Flan5645!")  
+
 
 usernames = [] # usernames of accounts
 userclass = [] # real = 0, bot = 1, fake = 2
